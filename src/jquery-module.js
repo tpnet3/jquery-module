@@ -16,7 +16,11 @@ jQuery.fn.module = function(moduleUri, options, callback) {
 
         var loadSuccess = function() {
             if (jQuery.module[moduleName]) {
-                jQuery.module[moduleName](_self, options);
+                if (typeof options == "function") {
+                    jQuery.module[moduleName](_self, options());
+                } else {
+                    jQuery.module[moduleName](_self, options);
+                }
             }
         }
 
