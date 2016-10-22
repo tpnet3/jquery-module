@@ -4,11 +4,24 @@
         <script src="../../src/jquery-module.js"></script>
         <script>
             $(document).ready(function() {
-                $("body").module("helloworld.js", {
-                    text: "Hello World !"
+                $("div").module("helloworld.js", function(self) {
+                    var html = $(self).html();
+
+                    if (html) {
+                        return {
+                            text: html + " World !"
+                        }
+                    } else {
+                        return {
+                            text: "Wellcome"
+                        }
+                    }
                 })
             })
         </script>
     </head>
-    <body></body>
+    <body>
+        <div>Hello</div>
+        <div></div>
+    </body>
 </html>

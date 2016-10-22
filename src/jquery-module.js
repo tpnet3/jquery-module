@@ -11,10 +11,38 @@ jQuery.fn.module = function(moduleUri, options, callback) {
     var moduleName = moduleUri.split("/");
     moduleName = moduleName[moduleName.length - 1];
 
+    var callbackList = [];
+
+    if ( ! jQuery.module._loaded[moduleName]) {
+        $(document).trigger("jqueryModuleLoadStart", [moduleName]);
+
+        $.getScript(jQuery.module._dir + moduleUri + ".js")
+            .done(function(script, textStatus) {
+
+                jQuery.each(callbackList, function(index, value) {
+                    value();
+                });
+
+                $(document).trigger("jqueryModuleLoadSuccess", [moduleName]);
+                jQuery.module._loaded[moduleName] = true;
+
+                if (typeof callback == "function") {
+                    callback(true);
+                }
+            })
+            .fail(function(jqxhr, settings, exception) {
+                $(document).trigger("jqueryModuleLoadFail", [moduleName]);
+
+                if (typeof callback == "function") {
+                    callback(false);
+                }
+            });
+    }
+
     return this.each(function() {
         var _self = this;
 
-        var loadSuccess = function() {
+        callbackList.push(function() {
             if (jQuery.module[moduleName]) {
                 if (typeof options == "function") {
                     jQuery.module[moduleName](_self, options(_self));
@@ -22,30 +50,6 @@ jQuery.fn.module = function(moduleUri, options, callback) {
                     jQuery.module[moduleName](_self, options);
                 }
             }
-        }
-
-        if (jQuery.module._loaded[moduleName]) {
-            loadSuccess();
-        } else {
-            jQuery.module._loaded[moduleName] = true;
-            $(document).trigger("jqueryModuleLoadStart", [moduleName]);
-
-            $.getScript(jQuery.module._dir + moduleUri + ".js")
-                .done(function(script, textStatus) {
-                    loadSuccess();
-                    $(document).trigger("jqueryModuleLoadSuccess", [moduleName]);
-
-                    if (typeof callback == "function") {
-                        callback(true);
-                    }
-                })
-                .fail(function(jqxhr, settings, exception) {
-                    $(document).trigger("jqueryModuleLoadFail", [moduleName]);
-
-                    if (typeof callback == "function") {
-                        callback(false);
-                    }
-                });
-        }
+        });
     });
 }
