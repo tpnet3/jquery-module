@@ -14,20 +14,23 @@ jQuery.fn.module = jQuery.fn.module || function(moduleUri, options, parentDestro
     var callbackList = [];
 
     if ( ! jQuery.module._loaded[moduleName]) {
-        $(document).trigger("jqueryModuleLoadStart", [moduleName]);
+        
+        var moduleUrl = jQuery.module._dir + moduleUri + ".js";
 
-        $.getScript(jQuery.module._dir + moduleUri + ".js")
+        $(document).trigger("jqueryModuleLoadStart", [moduleUrl]);
+
+        $.getScript(moduleUrl)
             .done(function(script, textStatus) {
 
                 jQuery.each(callbackList, function(index, value) {
                     value();
                 });
 
-                $(document).trigger("jqueryModuleLoadSuccess", [moduleName]);
+                $(document).trigger("jqueryModuleLoadSuccess", [moduleUrl]);
                 jQuery.module._loaded[moduleName] = true;
             })
             .fail(function(jqxhr, settings, exception) {
-                $(document).trigger("jqueryModuleLoadFail", [moduleName]);
+                $(document).trigger("jqueryModuleLoadFail", [moduleUrl]);
             });
     } else {
         setTimeout(function() {
