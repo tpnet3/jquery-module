@@ -82,10 +82,9 @@ jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
 
 jQuery.fn.destroyModules = function() {
     var destroyCallback = this.data("destroyModules");
+    console.log(destroyCallback);
 
     if (destroyCallback) {
-        console.log(destroyCallback);
-
         $.each(destroyCallback, function(index, value) {
             value();
         });
