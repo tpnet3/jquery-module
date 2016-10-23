@@ -52,6 +52,12 @@ jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
     var doDestroyCallback = function() {
         setTimeout(function() {
             $.each(destroyCallback, function(index, value) {
+                var parentDestroyCallbackIndex = parentDestroyCallback.indexOf(value);
+
+                if (parentDestroyCallbackIndex != -1) {
+                    parentDestroyCallback.splice(parentDestroyCallbackIndex, 1);
+                }
+
                 value();
             });
         }, 0);
