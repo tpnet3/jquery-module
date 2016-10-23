@@ -52,18 +52,16 @@ jQuery.fn.module = function(moduleUri, options, callback) {
                     calledOptions = options;
                 }
 
-                var returnCallback = jQuery.module[moduleName](_self, calledOptions);
-
-                if (typeof returnCallback == "function") {
-                    destroyCallback.push(returnCallback);
-                }
+                jQuery.module[moduleName](_self, calledOptions, destroyCallback);
             }
         });
     });
 
     return function() {
-        $.each(destroyCallback, function(index, value) {
-            value();
-        });
+        setTimeout(function() {
+            $.each(destroyCallback, function(index, value) {
+                value();
+            });
+        }, 0);
     }
 }
