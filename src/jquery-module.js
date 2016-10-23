@@ -75,5 +75,21 @@ jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
         parentDestroyCallback.unshift(doDestroyCallback);
     }
 
+    this.data("destroyModules", (this.data("destroyModules") || []).unshift(doDestroyCallback));
+
     return doDestroyCallback;
+}
+
+jQUery.fn.destroyModules = function() {
+    var destroyCallback = this.data("destroyModules");
+
+    if (destroyCallback) {
+        $.each(destroyCallback, function(index, value) {
+            value();
+        });
+
+        this.data("destroyModules", []);
+    }
+
+    return this;
 }
