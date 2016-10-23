@@ -39,17 +39,31 @@ jQuery.fn.module = function(moduleUri, options, callback) {
             });
     }
 
-    return this.each(function() {
+    var destroyCallback = [];
+
+    this.each(function() {
         var _self = this;
 
         callbackList.push(function() {
             if (jQuery.module[moduleName]) {
                 if (typeof options == "function") {
-                    jQuery.module[moduleName](_self, options(_self));
+                    calledOptions = options();
                 } else {
-                    jQuery.module[moduleName](_self, options);
+                    calledOptions = options;
+                }
+
+                var returnCallback = jQuery.module[moduleName](_self, calledOptions);
+
+                if (typeof returnCallback == "function") {
+                    destroyCallback.push(returnCallback);
                 }
             }
         });
     });
+
+    return function() {
+        $.each(destroyCallback, function(index, value) {
+            value();
+        });
+    }
 }
