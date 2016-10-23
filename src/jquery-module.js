@@ -3,7 +3,7 @@ jQuery.module = {
     _dir: ""
 };
 
-jQuery.fn.module = function(moduleUri, options, callback) {
+jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
     if (moduleUri.slice(-3) == ".js") {
         moduleUri = moduleUri.slice(0, moduleUri.length - 3);
     }
@@ -25,21 +25,13 @@ jQuery.fn.module = function(moduleUri, options, callback) {
 
                 $(document).trigger("jqueryModuleLoadSuccess", [moduleName]);
                 jQuery.module._loaded[moduleName] = true;
-
-                if (typeof callback == "function") {
-                    callback(true);
-                }
             })
             .fail(function(jqxhr, settings, exception) {
                 $(document).trigger("jqueryModuleLoadFail", [moduleName]);
-
-                if (typeof callback == "function") {
-                    callback(false);
-                }
             });
     }
 
-    var destroyCallback = [];
+    destroyCallback = [];
 
     this.each(function() {
         var _self = this;
@@ -57,11 +49,17 @@ jQuery.fn.module = function(moduleUri, options, callback) {
         });
     });
 
-    return function() {
+    var doDestroyCallback = function() {
         setTimeout(function() {
             $.each(destroyCallback, function(index, value) {
                 value();
             });
         }, 0);
     }
+
+    if (parentDestroyCallback) {
+        parentDestroyCallback.unshift(doDestroyCallback);
+    }
+
+    return doDestroyCallback;
 }
