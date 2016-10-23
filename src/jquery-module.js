@@ -1,9 +1,9 @@
-jQuery.module = {
+jQuery.module = jQuery.module || {
     _loaded: {},
     _dir: ""
 };
 
-jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
+jQuery.fn.module = jQuery.fn.module || function(moduleUri, options, parentDestroyCallback) {
     if (moduleUri.slice(-3) == ".js") {
         moduleUri = moduleUri.slice(0, moduleUri.length - 3);
     }
