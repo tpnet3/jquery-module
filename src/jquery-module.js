@@ -29,6 +29,12 @@ jQuery.fn.module = function(moduleUri, options, parentDestroyCallback) {
             .fail(function(jqxhr, settings, exception) {
                 $(document).trigger("jqueryModuleLoadFail", [moduleName]);
             });
+    } else {
+        setTimeout(function() {
+            jQuery.each(callbackList, function(index, value) {
+                value();
+            });
+        }, 0);
     }
 
     destroyCallback = [];
